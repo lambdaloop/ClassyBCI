@@ -2,7 +2,7 @@
 """
 
 import serial
-
+from signal_processing import *
 
 class OpenBCIBoard(object):
   """Handle a connection to an OpenBCI board.
@@ -12,10 +12,12 @@ class OpenBCIBoard(object):
     baud: The baud of the serial connection.
   """
 
+  
   def __init__(self, port, baud):
     self.ser = serial.Serial(port, baud)
     self.dump_registry_data()
     self.streaming = False
+    self.all_samples = []
 
   def dump_registry_data(self):
     """Dump all the debug data until we get to a line with something
@@ -25,7 +27,7 @@ class OpenBCIBoard(object):
     while 'begin streaming data' not in line:
       line = self.ser.readline()
 
-  def start_streaming(self, callback):
+  def start_streaming(self, callback, raw=False):
     """Start handling streaming data from the board. Call a provided callback
     for every single sample that is processed.
 
@@ -41,7 +43,13 @@ class OpenBCIBoard(object):
     while True:
       data = self.ser.readline()
       sample = OpenBCISample(data)
-      callback(sample)
+      if raw:
+        callback(sample)
+      else:
+        self.all_samples.append(sample)
+        if len(self.all_samples) >= 125:
+          callback(get_features(filter_signal(self.all_samples)))
+          self.all_samples = []
 
 
 class OpenBCISample(object):
@@ -55,4 +63,4 @@ class OpenBCISample(object):
       self.channels.append(int(parts[c]))
     # This is fucking bullshit but I have to strip the comma from the last
     # sample because the board is returning a comma... wat?
-    self.channels.append(int(parts[len(parts) - 1][:-1])) 
+    self.channels.append(int(parts[len(parts) - 1][:-1]))
