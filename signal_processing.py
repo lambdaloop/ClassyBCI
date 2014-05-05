@@ -62,7 +62,7 @@ def get_features(signal):
     return features
 
 def get_features_filter(signal):
-    return get_features(filter_signal(signal))
+    return get_features(filter_signal(np.array(signal)))
         
 # signal = np.random.randn(125)
 # print(get_features(filter_signal(signal)))

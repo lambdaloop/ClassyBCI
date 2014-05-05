@@ -1,6 +1,6 @@
 """Core OpenBCI objects for handling connections and samples from the board.
 """
-
+import time
 import serial
 from signal_processing import *
 
@@ -46,9 +46,25 @@ class OpenBCIBoard(object):
       if raw:
         callback(sample)
       else:
-        self.all_samples.append(sample)
-        if len(self.all_samples) >= 125:
-          callback(get_features(filter_signal(self.all_samples)))
+        sample = sample.channels
+        if len(self.all_samples) == 0:
+          self.all_samples = [list() for i in range(len(sample))]
+
+        for i, s in enumerate(sample):
+          self.all_samples[i].append(s)
+
+        t = time.time()
+          
+        if len(self.all_samples[0]) >= 125:
+          out = []
+          for x in self.all_samples:
+            out.extend(get_features_filter(x))
+          xx = np.append(t, out)
+          callback(xx)
+          f = open('collect.csv', 'a')
+          f.write(', '.join([str(x) for x in xx.tolist()]))
+          f.write('\n')
+          f.close()
           self.all_samples = []
 
 
@@ -64,3 +80,4 @@ class OpenBCISample(object):
     # This is fucking bullshit but I have to strip the comma from the last
     # sample because the board is returning a comma... wat?
     self.channels.append(int(parts[len(parts) - 1][:-1]))
+
