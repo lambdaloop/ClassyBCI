@@ -9,7 +9,7 @@ bp = mne.filter.band_pass_filter
 lpf = mne.filter.low_pass_filter
 
 def rms(signal):
-    return np.sqrt(np.sum(signal**2) * 1.0/len(signal))
+    return np.sqrt(np.sum(signal**2) * 1.0/signal.size)
 
 def num_zero_crossings(signal):
     d = np.append(signal[1:], signal[-1])
@@ -24,6 +24,8 @@ def filter_signal(signal):
     return low
     
 def get_features(signal):
+    #print(signal)
+    
     freq_cutoffs = [3, 8, 12, 27, 50]
 
     features = []
@@ -37,7 +39,7 @@ def get_features(signal):
         s = bp(signal, SAMPLING_RATE, freq_cutoffs[i], freq_cutoffs[i+1])
         features.append(rms(s))
 
-    fourier = np.fft.rfft(signal * np.hamming(len(signal)))
+    fourier = np.fft.rfft(signal * np.hamming(signal.size))
     features.extend(abs(fourier))
 
     wsize = 64
@@ -67,7 +69,9 @@ def get_features_filter(signal):
 
 def extract_features(signals):
     out = np.array([])
-    for sig in signals:
+    print(signals)
+    for i in range(signals.shape[0]):
+        sig = signals[i]
         out = np.append(out, get_features_filter(sig))
     return out
 # signal = np.random.randn(125)

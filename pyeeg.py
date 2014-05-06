@@ -294,7 +294,7 @@ def bin_power(X,Band,Fs):
 	for Freq_Index in xrange(0,len(Band)-1):
 		Freq = float(Band[Freq_Index])										## Xin Liu
 		Next_Freq = float(Band[Freq_Index+1])
-		Power[Freq_Index] = sum(C[floor(Freq/Fs*len(X)):floor(Next_Freq/Fs*len(X))])
+		Power[Freq_Index] = sum(C[int(floor(Freq/Fs*len(X))):int(floor(Next_Freq/Fs*len(X)))])
 	Power_Ratio = Power/sum(Power)
 	return Power, Power_Ratio	
 

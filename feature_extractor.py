@@ -1,6 +1,7 @@
 #!/usr/bin/env python2
 
 import time
+import numpy as np
 
 """A feature extractor, meant to be used with the OpenBCIBoard object"""
 
@@ -42,7 +43,7 @@ class FeatureExtractor(object):
         for i, s in enumerate(sample):
             self.all_samples[i].append(s)
 
-        if len(self.all_samples[0]) >= threshold:
+        if len(self.all_samples[0]) >= self.threshold:
             x = np.array(self.all_samples)
             features = self.extract_features(x)
             d = dict()

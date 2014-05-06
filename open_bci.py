@@ -2,7 +2,6 @@
 """
 import time
 import serial
-from signal_processing import *
 
 class OpenBCIBoard(object):
   """Handle a connection to an OpenBCI board.
@@ -45,8 +44,10 @@ class OpenBCIBoard(object):
     
     while self.should_stream:
       data = self.ser.readline()
-      sample = OpenBCISample(data)
-      callback(sample)
+      if self.should_stream:
+        sample = OpenBCISample(data)
+      if self.should_stream:
+        callback(sample)
 
 class OpenBCISample(object):
   """Object encapulsating a single sample from the OpenBCI board."""
