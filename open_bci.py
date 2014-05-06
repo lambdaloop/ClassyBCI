@@ -17,8 +17,8 @@ class OpenBCIBoard(object):
     self.ser = serial.Serial(port, baud)
     self.dump_registry_data()
     self.streaming = False
-    self.all_samples = []
-
+    self.should_stream = False
+    
   def dump_registry_data(self):
     """Dump all the debug data until we get to a line with something
     about streaming data.
@@ -27,7 +27,7 @@ class OpenBCIBoard(object):
     while 'begin streaming data' not in line:
       line = self.ser.readline()
 
-  def start_streaming(self, callback, raw=False):
+  def start_streaming(self, callback):
     """Start handling streaming data from the board. Call a provided callback
     for every single sample that is processed.
 
@@ -40,33 +40,13 @@ class OpenBCIBoard(object):
       self.ser.write('x')
       # Dump the first line that says "Arduino: Starting..."
       self.ser.readline()
-    while True:
+
+    self.should_stream = True
+    
+    while self.should_stream:
       data = self.ser.readline()
       sample = OpenBCISample(data)
-      if raw:
-        callback(sample)
-      else:
-        sample = sample.channels
-        if len(self.all_samples) == 0:
-          self.all_samples = [list() for i in range(len(sample))]
-
-        for i, s in enumerate(sample):
-          self.all_samples[i].append(s)
-
-        t = time.time()
-          
-        if len(self.all_samples[0]) >= 125:
-          out = []
-          for x in self.all_samples:
-            out.extend(get_features_filter(x))
-          xx = np.append(t, out)
-          callback(xx)
-          f = open('collect.csv', 'a')
-          f.write(', '.join([str(x) for x in xx.tolist()]))
-          f.write('\n')
-          f.close()
-          self.all_samples = []
-
+      callback(sample)
 
 class OpenBCISample(object):
   """Object encapulsating a single sample from the OpenBCI board."""
