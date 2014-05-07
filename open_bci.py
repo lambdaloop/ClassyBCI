@@ -48,6 +48,9 @@ class OpenBCIBoard(object):
         sample = OpenBCISample(data)
       if self.should_stream:
         callback(sample)
+        
+  def disconnect(self):
+    self.ser.close()
 
 class OpenBCISample(object):
   """Object encapulsating a single sample from the OpenBCI board."""

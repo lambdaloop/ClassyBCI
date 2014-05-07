@@ -69,7 +69,10 @@ class OpenBCICollector(object):
         self.bg_thread = None
         self.file.close()
         self.file = None
-        
+
+    def disconnect(self):
+        self.board.disconnect()
+                
     def start_bg_collection(self):
         if self.bg_thread:
             self.stop_bg_collection()
