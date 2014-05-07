@@ -43,7 +43,7 @@ def get_features(signal):
     features.extend(abs(fourier))
 
     wsize = 64
-    X = mne.time_frequency.stft(signal, wsize)
+    X = mne.time_frequency.stft(signal, wsize, verbose=False)
     freqs = np.reshape(abs(X), X.size)
     features.extend(freqs)
 
