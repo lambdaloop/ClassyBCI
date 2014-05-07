@@ -46,19 +46,20 @@ class OpenBCICollector(object):
         signal = d2.pop('signal')
         features = d2.pop('features')
 
-        d2['features'] = pickle.dumps(signal.tolist())
-        d2['signal'] = pickle.dumps(features.tolist())
-        # for i, f in enumerate(features):
-        #     ss = 'f%04d' % i
-        #     d2[ss] = f
+        # d2['features'] = pickle.dumps(signal.tolist())
+        # d2['signal'] = pickle.dumps(features.tolist())
+        for i, f in enumerate(features):
+            ss = 'f%04d' % i
+            d2[ss] = f
 
-        # for c, s in enumerate(signal):
-        #     for i, x in enumerate(s):
-        #         ss = 's_%d_%03d' % (c, i)
-        #         d2[ss] = x
+        for c, s in enumerate(signal):
+            for i, x in enumerate(s):
+                ss = 's_%d_%03d' % (c, i)
+                d2[ss] = x
 
         if self.csv_writer:
             self.csv_writer.writerow(d2)
+            self.file.flush()
         
     def stop_bg_collection(self):
         # resolve files and stuff
@@ -73,15 +74,15 @@ class OpenBCICollector(object):
         if self.bg_thread:
             self.stop_bg_collection()
 
-        self.file = open(self.fname, 'a')
+        self.file = open(self.fname, 'w')
         
-        fieldnames = ['tag', 'start_time', 'end_time', 'features', 'signal']
-        # for i in range(self.num_features):
-        #     fieldnames.append('f%04d' % i)
+        fieldnames = ['tag', 'start_time', 'end_time']
+        for i in range(self.num_features):
+            fieldnames.append('f%04d' % i)
             
-        # for c in range(8):
-        #     for i in range(self.feature_samples):
-        #         fieldnames.append('s_%d_%03d' % (c, i))
+        for c in range(8):
+            for i in range(self.feature_samples):
+                fieldnames.append('s_%d_%03d' % (c, i))
             
         self.csv_writer = csv.DictWriter(self.file, fieldnames)
         self.csv_writer.writeheader()
@@ -94,3 +95,6 @@ class OpenBCICollector(object):
 
     def tag_it(self, tag):
         self.extractor.tag_it(tag)
+
+
+

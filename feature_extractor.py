@@ -45,6 +45,7 @@ class FeatureExtractor(object):
 
         if len(self.all_samples[0]) >= self.threshold:
             x = np.array(self.all_samples)
+            self.all_samples = []
             features = self.extract_features(x)
             d = dict()
             d['start_time'] = self.start_time

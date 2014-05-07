@@ -19,7 +19,7 @@ collector.tag_it('hand')
 
 collector.tag_it(None)
 
-# time.sleep(10)
+time.sleep(10)
 
 
-collector.stop_bg_collection()
+#collector.stop_bg_collection()
