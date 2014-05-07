@@ -69,7 +69,6 @@ def get_features_filter(signal):
 
 def extract_features(signals):
     out = np.array([])
-    print(signals)
     for i in range(signals.shape[0]):
         sig = signals[i]
         out = np.append(out, get_features_filter(sig))
