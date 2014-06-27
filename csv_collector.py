@@ -25,7 +25,7 @@ class CSVCollector(object):
         self.tag = 0
         self.bg_thread = None
         
-    def stop_bg_collection(self):
+    def stop(self):
         # resolve files and stuff
         self.board.should_stream = False
         self.csv_writer = None
@@ -48,7 +48,7 @@ class CSVCollector(object):
         self.csv_writer.writerow(d)
         self.file.flush()
         
-    def start_bg_collection(self):
+    def start(self):
         if self.bg_thread:
             self.stop_bg_collection()
 
@@ -57,14 +57,14 @@ class CSVCollector(object):
         self.csv_writer = csv.DictWriter(self.file, self.fieldnames)
         self.csv_writer.writeheader()
         # create a new thread in which the OpenBCIBoard object will stream data
-        # self.bg_thread = threading.Thread(target=self.board.start_streaming,
-        #                                   args=(self.receive_sample, ))
-        self.bg_thread = Process(target=self.board.start_streaming,
-                                 args=(self.receive_sample, ))
+        self.bg_thread = threading.Thread(target=self.board.start_streaming,
+                                          args=(self.receive_sample, ))
+        # self.bg_thread = Process(target=self.board.start_streaming,
+        #                          args=(self.receive_sample, ))
         
         self.bg_thread.start()
 
 
-    def tag_it(self, tag):
+    def tag(self, tag):
         self.tag = tag
 
