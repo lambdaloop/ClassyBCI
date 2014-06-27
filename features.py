@@ -1,4 +1,3 @@
-
 import mne
 import scipy
 import numpy as np
@@ -22,10 +21,10 @@ def num_zero_crossings(signal):
 def filter_signal(signal):
     low = lpf(signal, SAMPLING_RATE, 55)
     return low
-    
+
 def get_features(signal):
     #print(signal)
-    
+
     freq_cutoffs = [3, 8, 12, 27, 50]
 
     features = []
@@ -34,7 +33,7 @@ def get_features(signal):
 
     s = lpf(signal, SAMPLING_RATE, freq_cutoffs[0])
     features.append(rms(s))
-    
+
     for i in range(len(freq_cutoffs)-1):
         s = bp(signal, SAMPLING_RATE, freq_cutoffs[i], freq_cutoffs[i+1])
         features.append(rms(s))
@@ -60,7 +59,7 @@ def get_features(signal):
     features.append(scipy.stats.kurtosis(signal))
 
     #features.extend(signal)
-            
+
     return features
 
 def get_features_filter(signal):
