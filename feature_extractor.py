@@ -30,7 +30,7 @@ class FeatureExtractor(object):
         self.tag = None
 
     """ Takes an OpenBCISample object and stores it.
-        Will call CALLBACK when THRESHOLD samples have been received""" 
+        Will call CALLBACK when THRESHOLD samples have been received"""
     def receive_sample(self, sample):
         sample = sample.channels
         if len(self.all_samples) == 0:
@@ -39,7 +39,7 @@ class FeatureExtractor(object):
 
         # store it always, but only use when it's the last sample
         end_time = time.time()
-        
+
         for i, s in enumerate(sample):
             self.all_samples[i].append(s)
 
@@ -54,6 +54,6 @@ class FeatureExtractor(object):
             d['features'] = features
             d['signal'] = x
             self.callback(d)
-            
+
     def tag_it(self, tag):
         self.tag = tag

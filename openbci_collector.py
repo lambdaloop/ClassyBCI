@@ -29,19 +29,19 @@ class OpenBCICollector(object):
         self.file = None
         self.csv_writer = None
         self.data = []
-        
+
         test = features.extract_features(np.reshape(np.random.randn(feature_samples*8), (8, feature_samples)))
         self.num_features = test.size
         self.feature_samples = feature_samples
         self.extra_process = extra_process
-        
+
     def collect(self, d):
         # assuming that csv_writer has been defined before calling this
         self.data.append(d)
 
         if self.extra_process:
             self.extra_process(d)
-        
+
         d2 = dict(d)
         signal = d2.pop('signal')
         features = d2.pop('features')
@@ -60,7 +60,7 @@ class OpenBCICollector(object):
         if self.csv_writer:
             self.csv_writer.writerow(d2)
             self.file.flush()
-        
+
     def stop_bg_collection(self):
         # resolve files and stuff
         self.board.should_stream = False
@@ -72,32 +72,30 @@ class OpenBCICollector(object):
 
     def disconnect(self):
         self.board.disconnect()
-                
+
     def start_bg_collection(self):
         if self.bg_thread:
             self.stop_bg_collection()
 
         self.file = open(self.fname, 'w')
-        
+
         fieldnames = ['tag', 'start_time', 'end_time']
+
         for i in range(self.num_features):
             fieldnames.append('f%04d' % i)
-            
+
         for c in range(8):
             for i in range(self.feature_samples):
                 fieldnames.append('s_%d_%03d' % (c, i))
-            
+
         self.csv_writer = csv.DictWriter(self.file, fieldnames)
         self.csv_writer.writeheader()
         # create a new thread in which the OpenBCIBoard object will stream data
         self.bg_thread = threading.Thread(target=self.board.start_streaming,
                                           args=(self.extractor.receive_sample, ))
-        
+
         self.bg_thread.start()
 
 
     def tag_it(self, tag):
         self.extractor.tag_it(tag)
-
-
-
