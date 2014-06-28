@@ -16,11 +16,13 @@ class CSVCollector(object):
         self.fname = fname
         self.counter = 0
         self.file = None
-        self.fieldnames = ['time', 'tag']
+        self.fieldnames = []
         self.channel_names = []
         for i in range(self.board.channels):
             self.channel_names.append("channel_" + str(i))
+            
         self.fieldnames.extend(self.channel_names)
+        self.fieldnames.extend(['time', 'tag'])
             
         self.tag = 0
         self.bg_thread = None
